@@ -11,9 +11,13 @@ class AppController extends Action{
         $tweet = Container::getModel('Tweet');
         $tweet->__set('id_usuario', $_SESSION['id']);
         $this->view->tweets = $tweet->getAll();
+        $usuario = Container::getModel('Usuario');
+        $usuario->__set('id', $_SESSION['id']);
+        $this->view->nome_usuario = $usuario->getInfo();
+        $this->view->total_seguidores= $usuario->getUsuariosSeguidores();
+        $this->view->total_seguindo= $usuario->getUsuariosSeguindo();
+        $this->view->total_tweets= $usuario->getTotalTweets();
         $this-> render('timeline');
-        
-        
     }
     public function postarTweet(){
         $this->validaAutenticacao();
@@ -32,6 +36,12 @@ class AppController extends Action{
     }
     public function quemSeguir(){
         $this->validaAutenticacao();        
+        $usuario = Container::getModel('Usuario');
+        $usuario->__set('id', $_SESSION['id']);
+        $this->view->nome_usuario = $usuario->getInfo();
+        $this->view->total_seguidores= $usuario->getUsuariosSeguidores();
+        $this->view->total_seguindo= $usuario->getUsuariosSeguindo();
+        $this->view->total_tweets= $usuario->getTotalTweets();
         $nome_pessoa = isset($_GET['pesquisarPor']) ? $_GET['pesquisarPor']: '';
         if($nome_pessoa != ''){
             $usuario = Container::getModel('Usuario');
@@ -57,5 +67,12 @@ class AppController extends Action{
             $usuario->deixarSeguirUsuario($id_usuario_seguindo);
         }
         header('location:/quemSeguir');
+    }
+    public function remove_tweet(){
+        $this->validaAutenticacao();
+        $tweet = Container::getModel('Tweet');
+        $tweet->__set('id',$_POST['id_tweet']);
+        $tweet->remover_tweet();
+        header('location:/timeline');
     }
 }

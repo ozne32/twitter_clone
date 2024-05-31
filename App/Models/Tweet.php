@@ -33,11 +33,23 @@ class Tweet extends Model{
         from tweets as t
         left join usuarios as u 
         on t.id_usuario = u.id
-        where id_usuario = ?
+        where id_usuario = :id_usuario
+        or t.id_usuario in 
+        (select id_usuario_seguindo 
+        from usuarios_seguidores 
+        where id_usuario = :id_usuario)
         order by t.data desc";
         $smtm= $this->db->prepare($query);
-        $smtm->bindValue(1, $this->id_usuario);
+        $smtm->bindValue(':id_usuario', $this->id_usuario);
         $smtm->execute();
         return $smtm->fetchAll(\PDO::FETCH_OBJ);
     }
+    public function remover_tweet(){
+        $query = 'delete from tweets where id = ?';
+        $smtm = $this->db->prepare($query);
+        $smtm->bindValue(1, $this->id);
+        $smtm->execute();
+        return $this;
+    }
+    
 }

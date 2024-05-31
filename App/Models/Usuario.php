@@ -92,4 +92,36 @@ class Usuario extends Model{
 
         return true;
     }
+    // informações do usuário 
+    public function getInfo(){
+        $query = 'select nome from usuarios where id = :id';
+        $smtm = $this->db->prepare($query);
+        $smtm->bindValue(':id', $this->id);
+        $smtm->execute();
+        return $smtm->fetch(\PDO::FETCH_OBJ);
+    }
+    // total de tweets
+    public function getTotalTweets(){
+        $query = 'select count(*) as total_tweets from tweets where id_usuario = :id';
+        $smtm = $this->db->prepare($query);
+        $smtm->bindValue(':id', $this->id);
+        $smtm->execute();
+        return $smtm->fetch(\PDO::FETCH_OBJ)->total_tweets;
+    }
+    // total de usuários que estamos seguidno 
+    public function getUsuariosSeguindo(){
+        $query = 'select count(*) as total_seguindo from usuarios_seguidores where id_usuario = :id';
+        $smtm = $this->db->prepare($query);
+        $smtm->bindValue(':id', $this->id);
+        $smtm->execute();
+        return $smtm->fetch(\PDO::FETCH_OBJ)->total_seguindo;
+    }
+    // total de seguidores
+    public function getUsuariosSeguidores(){
+        $query = 'select count(*) as total_seguidores from usuarios_seguidores where id_usuario_seguindo = :id';
+        $smtm = $this->db->prepare($query);
+        $smtm->bindValue(':id', $this->id);
+        $smtm->execute();
+        return $smtm->fetch(\PDO::FETCH_OBJ)->total_seguidores;
+    }
 }
